@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlizVPN - Secure Dashboard</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+
+    :root {
+      --bg-deep: #06040d;
+      --bg-card: rgba(22, 16, 38, 0.85);
+      --purple-primary: #8b5cf6;
+      --purple-neon: #a855f7;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-cyber: rgba(168, 85, 247, 0.35);
+      --success-green: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image: 
+        linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 50% 15%, rgba(139, 92, 246, 0.2) 0%, transparent 55%),
+        radial-gradient(circle at 10% 85%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 90% 85%, rgba(123, 44, 191, 0.15) 0%, transparent 50%);
+      background-size: 30px 30px, 30px 30px, 100% 100%, 100% 100%, 100% 100%;
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-glow-wrapper {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 10px auto;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+      border: 2px solid #e9d5ff;
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 18px;
+      background: rgba(15, 10, 26, 0.9);
+      padding: 5px;
+      border-radius: 16px;
+      border: 1px solid var(--border-cyber);
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 10px 4px;
+      border-radius: 12px;
+      font-size: 11px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.5);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .section-category-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: #d8b4fe;
+      margin: 16px 0 8px 4px;
+    }
+
+    .plan-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border-cyber);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .plan-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .plan-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    .plan-badge {
+      font-size: 10px;
+      color: #e9d5ff;
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      padding: 2px 6px;
+      border-radius: 6px;
+      width: fit-content;
+    }
+
+    .plan-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .plan-price {
+      font-size: 13px;
+      color: #d8b4fe;
+      font-weight: 900;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .custom-card, .wallet-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--border-cyber);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .section-header {
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      color: #e9d5ff;
+      text-align: center;
+    }
+
+    .slider-group {
+      margin-bottom: 16px;
+      background: rgba(10, 7, 18, 0.6);
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #d8b4fe;
+    }
+
+    .slider-label span {
+      color: #ffffff;
+      background: rgba(168, 85, 247, 0.3);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 6px;
+      background: #2a1b4e;
+      border-radius: 5px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #c084fc;
+      cursor: pointer;
+    }
+
+    .calc-results {
+      background: rgba(8, 5, 15, 0.9);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      margin-bottom: 16px;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .calc-row span:last-child {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .calc-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 900;
+      color: #e9d5ff;
+      margin-top: 6px;
+    }
+
+    .calc-total span {
+      color: #34d399;
+      font-size: 16px;
+    }
+
+    .wallet-balance-box {
+      background: rgba(10, 7, 18, 0.6);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .wallet-balance {
+      font-size: 24px;
+      font-weight: 900;
+      color: #e9d5ff;
+      margin-top: 4px;
+    }
+
+    .card-box-container {
+      background: #080511;
+      padding: 14px;
+      border-radius: 14px;
+      margin: 14px 0;
+      border: 1px dashed var(--purple-neon);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .card-number {
+      letter-spacing: 2px;
+      font-family: monospace;
+      font-size: 15px;
+      color: #ffffff;
+      direction: ltr;
+      font-weight: 700;
+    }
+
+    .cyber-btn {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .toast {
+      visibility: hidden;
+      background-color: var(--success-green);
+      color: #fff;
+      text-align: center;
+      border-radius: 10px;
+      padding: 8px;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="brand-header">
+      <div class="logo-glow-wrapper">
+        <div style="font-size: 24px; font-weight: 900; color: #fff;">ALIZ</div>
+      </div>
+      <div class="brand-title">AlizVPN Dashboard</div>
+      <div class="brand-subtitle">FAST &amp; SECURE CONNECTION</div>
+    </div>
+
+    <!-- منوی تب‌ها -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="btn-plans" onclick="switchTab('plans')">خرید پلن</button>
+      <button class="tab-btn" id="btn-custom" onclick="switchTab('custom')">پلن دلخواه</button>
+      <button class="tab-btn" id="btn-wallet" onclick="switchTab('wallet')">کیف پول</button>
+      <button class="tab-btn" id="btn-support" onclick="switchTab('support')">پشتیبانی</button>
+    </div>
+
+    <!-- محتوای تب ۱: خرید پلن -->
+    <div id="tab-plans" class="tab-content active">
+      <div class="section-category-title">⚡ پلن اول: اقتصادی یک ماهه</div>
+      
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">یک ماهه ۱۰ گیگابایت</div>
+          <div class="plan-badge">اقتصادی</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۴۰,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۱ ماهه - ۱۰ گیگ', '40000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">یک ماهه ۲۰ گیگابایت</div>
+          <div class="plan-badge">اقتصادی</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۷۵,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۱ ماهه - ۲۰ گیگ', '75000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">یک ماهه ۳۰ گیگابایت</div>
+          <div class="plan-badge">پرطرفدار</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۱۱۰,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۱ ماهه - ۳۰ گیگ', '110000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">یک ماهه ۴۰ گیگابایت</div>
+          <div class="plan-badge">اقتصادی</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۱۴۰,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۱ ماهه - ۴۰ گیگ', '140000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="section-category-title">⚡ پلن دوم: اقتصادی دوماهه</div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">دوماهه ۱۰ گیگابایت</div>
+          <div class="plan-badge">دو ماهه</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۵۰,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۲ ماهه - ۱۰ گیگ', '50000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">دوماهه ۲۰ گیگابایت</div>
+          <div class="plan-badge">دو ماهه</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۸۵,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۲ ماهه - ۲۰ گیگ', '85000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">دوماهه ۳۰ گیگابایت</div>
+          <div class="plan-badge">دو ماهه</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۱۲۰,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۲ ماهه - ۳۰ گیگ', '120000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">دوماهه ۴۰ گیگابایت</div>
+          <div class="plan-badge">دو ماهه</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۱۶۰,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۲ ماهه - ۴۰ گیگ', '160000')">خرید پلن</button>
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-info">
+          <div class="plan-title">دوماهه ۵۰ گیگابایت</div>
+          <div class="plan-badge">ویژه</div>
+        </div>
+        <div class="plan-right">
+          <div class="plan-price">۱۹۵,۰۰۰ تومان</div>
+          <button class="buy-btn" onclick="buyPlan('اقتصادی ۲ ماهه - ۵۰ گیگ', '195000')">خرید پلن</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- محتوای تب ۲: پلن دلخواه -->
+    <div id="tab-custom" class="tab-content">
+      <div class="custom-card">
+        <div class="section-header">ساخت پلن دلخواه شما</div>
+        
+        <div class="slider-group">
+          <div class="slider-label">
+            حجم دلخواه:
+            <span id="volume-val">30 گیگابایت</span>
+          </div>
+          <input type="range" id="volume-range" min="10" max="200" step="10" value="30" oninput="updateCalculator()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            مدت زمان:
+            <span id="months-val">1 ماه</span>
+          </div>
+          <input type="range" id="months-range" min="1" max="6" step="1" value="1" oninput="updateCalculator()">
+        </div>
+
+        <div class="calc-results">
+          <div class="calc-row">
+            <span>قیمت پایه هر گیگ:</span>
+            <span>۴,۰۰۰ تومان</span>
+          </div>
+          <div class="calc-row">
+            <span>قیمت با تخفیف حجم بالا:</span>
+            <span id="per-gb-badge">۳,۸۰۰ تومان</span>
+          </div>
+          <div class="calc-total">
+            <span>مبلغ قابل پرداخت:</span>
+            <span id="total-price">۱۲۰,۰۰۰ تومان</span>
+          </div>
+        </div>
+
+        <button class="cyber-btn" onclick="buyCustomPlan()">ثبت و سفارش پلن دلخواه</button>
+      </div>
+    </div>
+
+    <!-- محتوای تب ۳: کیف پول -->
+    <div id="tab-wallet" class="tab-content">
+      <div class="wallet-card">
+        <div class="section-header">موجودی کیف پول شما</div>
+        <div class="wallet-balance-box">
+          <div style="font-size: 11px; color: var(--text-muted);">اعتبار فعلی</div>
+          <div class="wallet-balance">۰ تومان</div>
+        </div>
+
+        <div class="section-header" style="font-size: 13px; margin-top: 15px;">افزایش موجودی (کارت به کارت)</div>
+        <div class="card-box-container" onclick="copyCardNumber()">
+          <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px;">جهت کپی روی شماره کارت بزنید</div>
+          <div class="card-number" id="card-num">6219-8613-5913-3294</div>
+          <div style="font-size: 11px; color: #d8b4fe; margin-top: 6px;">به نام: علیرضا پژوهنده</div>
+        </div>
+
+        <button class="cyber-btn" onclick="sendReceipt()">ارسال فیش واریزی</button>
+        <div id="toast" class="toast">شماره کارت با موفقیت کپی شد!</div>
+      </div>
+    </div>
+
+    <!-- محتوای تب ۴: پشتیبانی -->
+    <div id="tab-support" class="tab-content">
+      <div class="wallet-card">
+        <div class="section-header">راهنما و پشتیبانی</div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.8; text-align: center;">
+          در صورت بروز هرگونه مشکل یا داشتن سوال درباره سرویس‌ها، می‌توانید با بخش پشتیبانی در ارتباط باشید.
+        </p>
+        <button class="cyber-btn" onclick="contactSupport()">ارتباط با پشتیبانی</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // مقداردهی اولیه Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.expand();
+    }
+
+    // سیستم تعویض تب‌ها (فوق‌العاده ساده و بدون خطا)
+    function switchTab(tabId) {
+      // مخفی کردن تمام تب‌ها
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(t => t.classList.remove('active'));
+
+      // غیرفعال کردن کلاس تمام دکمه‌ها
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(b => b.classList.remove('active'));
+
+      // فعال کردن تب و دکمه انتخابی
+      const targetTab = document.getElementById('tab-' + tabId);
+      const targetBtn = document.getElementById('btn-' + tabId);
+
+      if (targetTab) targetTab.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+    }
+
+    // محاسبه‌گر قیمت پلن دلخواه
+    function updateCalculator() {
+      const vol = parseInt(document.getElementById('volume-range').value);
+      const months = parseInt(document.getElementById('months-range').value);
+
+      document.getElementById('volume-val').innerText = vol + ' گیگابایت';
+      document.getElementById('months-val').innerText = months + ' ماه';
+
+      let basePricePerGb = 4000;
+      let discount = 0;
+
+      if (vol >= 150) {
+        discount = 0.20;
+      } else if (vol >= 100) {
+        discount = 0.15;
+      } else if (vol >= 60) {
+        discount = 0.10;
+      } else if (vol >= 30) {
+        discount = 0.05;
+      }
+
+      const effectivePricePerGb = basePricePerGb * (1 - discount);
+      document.getElementById('per-gb-badge').innerText = Math.round(effectivePricePerGb).toLocaleString('fa-IR') + ' تومان';
+
+      const totalPrice = Math.round(vol * effectivePricePerGb * months);
+      document.getElementById('total-price').innerText = totalPrice.toLocaleString('fa-IR') + ' تومان';
+    }
+
+    // خرید پلن‌های آماده
+    function buyPlan(title, price) {
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'buy_plan', title: title, price: price }));
+      } else {
+        alert('درخواست خرید: ' + title + ' (' + Number(price).toLocaleString('fa-IR') + ' تومان)');
+      }
+    }
+
+    // خرید پلن دلخواه
+    function buyCustomPlan() {
+      const vol = document.getElementById('volume-range').value;
+      const months = document.getElementById('months-range').value;
+      const totalPriceText = document.getElementById('total-price').innerText;
+
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'buy_custom_plan', volume: vol, months: months, price: totalPriceText }));
+      } else {
+        alert('پلن دلخواه: ' + vol + ' گیگ، ' + months + ' ماهه به مبلغ ' + totalPriceText);
+      }
+    }
+
+    // کپی شماره کارت
+    function copyCardNumber() {
+      const cardNum = document.getElementById('card-num').innerText.replace(/-/g, '');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cardNum).then(showToast).catch(() => fallbackCopy(cardNum));
+      } else {
+        fallbackCopy(cardNum);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast();
+      } catch (err) {
+        alert('کپی نشد.');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
+      }
+    }
+
+    // ارسال فیش
+    function sendReceipt() {
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'send_receipt' }));
+      } else {
+        alert('لطفاً فیش واریزی را ارسال کنید.');
+      }
+    }
+
+    // پشتیبانی
+    function contactSupport() {
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'support' }));
+      } else {
+        alert('ارتباط با پشتیبانی برقرار شد.');
+      }
+    }
+
+    // اجرای اولیه محاسبه‌گر
+    updateCalculator();
+  </script>
+</body>
+  </html>
